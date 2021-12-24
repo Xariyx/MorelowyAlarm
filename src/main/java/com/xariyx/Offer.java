@@ -14,9 +14,12 @@ public class Offer {
     public Offer(Element element) {
         this.link = element.child(0).attributes().get("href");
         this.name = element.attributes().get("data-product-name").trim();
-        this.discountPercent = regexPercent(element.getElementsByClass("price-badge").first().text());
         this.newPrice = regexPrice(element.getElementsByClass("product-slider-price").first().getElementsByClass("price-new").first().text());
         this.oldPrice = regexPrice(element.getElementsByClass("product-slider-price").first().getElementsByClass("price-old").first().text());
+        float percent = 100 - (newPrice*100 / oldPrice);
+        this.discountPercent = round(percent, 2);
+
+
         this.discountFlat = round(oldPrice - newPrice, 2);
     }
 

@@ -8,30 +8,67 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
+
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to Morelowy Alarm Cenowy finder!");
-        System.out.println();
-        System.out.println("Write by what list will be sorted: ");
-        System.out.println("1. Name");
-        System.out.println("2. NewPrice");
-        System.out.println("3. OldPrice");
-        System.out.println("4. DiscountFlat");
-        System.out.println("5. DiscountPercent (Default)");
-        String sortBy = scanner.nextLine();
-        System.out.println();
-        System.out.println("Write order which list will be sorted by:");
-        System.out.println("1. Asc (Default)");
-        System.out.println("2. Desc");
-        String sortOrder = scanner.nextLine();
-        System.out.println();
-        System.out.println("Show sold offers?:");
-        System.out.println("1. Yes");
-        System.out.println("2. No (Default)");
-        String soldOffers = scanner.nextLine();
+
+        if(args[0].equalsIgnoreCase("--help")){
+            System.out.println("Showing help for this command.");
+            System.out.println("Use switches:");
+            System.out.println("    --help - shows this message");
+            System.out.println("    --sort-by - sorts by specified variable:");
+            System.out.println("        name");
+            System.out.println("        newPrice");
+            System.out.println("        oldPrice");
+            System.out.println("        discountFlat");
+            System.out.println("        discountPercent (Default)");
+            System.out.println("    --sort-order - sorts by specified order:");
+            System.out.println("        asc (Default)");
+            System.out.println("        desc");
+            System.out.println("    --show-sold - show sold products:");
+            System.out.println("        yes");
+            System.out.println("        no (Default)");
+            return;
+
+        }
+        //Name
+        //NewPrice
+        //OldPrice
+        //DiscountFlat
+        //DiscountPercent (Default)
+        String sortBy = "discountPercent";
+
+        //Asc (Default)
+        //Desc
+        String sortOrder = "asc";
+
+        //Yes
+        //No (Default)
+        String showSold = "no";
+
+        boolean skip = false;
+        for (int i = 0; i < args.length; i++) {
+            if(skip){
+                skip = false;
+                continue;
+            }
+            if (args[i].equalsIgnoreCase("--sort-by")){
+                sortBy = args[i+1];
+                skip = true;
+                continue;
+            }
+            if (args[i].equalsIgnoreCase("--sort-order")){
+                sortOrder = args[i+1];
+                skip = true;
+                continue;
+            }
+            if (args[i].equalsIgnoreCase("--show-sold")){
+                showSold = args[i+1];
+                skip = true;
+            }
+        }
+
 
         long start = System.currentTimeMillis();
         String url = "https://lp.morele.net/alarmcenowy/";
@@ -53,7 +90,7 @@ public class Main {
         long fetchTime = System.currentTimeMillis() - start;
         start = System.currentTimeMillis();
         Elements offerElements = new Elements();
-        if(soldOffers.equalsIgnoreCase("yes")) {
+        if(showSold.equalsIgnoreCase("yes")) {
             offerElements = offerWrapper.children();
         }else {
             for (Element child : offerWrapper.children()) {

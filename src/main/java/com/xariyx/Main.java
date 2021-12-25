@@ -27,6 +27,11 @@ public class Main {
         System.out.println("1. Asc (Default)");
         System.out.println("2. Desc");
         String sortOrder = scanner.nextLine();
+        System.out.println();
+        System.out.println("Show sold offers?:");
+        System.out.println("1. Yes");
+        System.out.println("2. No (Default)");
+        String soldOffers = scanner.nextLine();
 
         long start = System.currentTimeMillis();
         String url = "https://lp.morele.net/alarmcenowy/";
@@ -45,14 +50,26 @@ public class Main {
             return;
         }
 
-        Elements offerElements = offerWrapper.children();
+        long fetchTime = System.currentTimeMillis() - start;
+        start = System.currentTimeMillis();
+        Elements offerElements = new Elements();
+        if(soldOffers.equalsIgnoreCase("yes")) {
+            offerElements = offerWrapper.children();
+        }else {
+            for (Element child : offerWrapper.children()) {
+                if (child.getElementsByClass("product-sold-text").first() == null) {
+                    offerElements.add(child);
+                }
+            }
+        }
+
 
         ArrayList<Offer> offers = new ArrayList<>(offerElements.size());
         for (Element offerElement : offerElements) {
             offers.add(new Offer(offerElement));
         }
 
-        long fetchTime = System.currentTimeMillis() - start;
+        long constructorTime = System.currentTimeMillis() - start;
         start = System.currentTimeMillis();
         sort(offers, sortBy, sortOrder);
         long sortTime = System.currentTimeMillis() - start;
@@ -62,6 +79,7 @@ public class Main {
 
         System.out.println("Showing " + offers.size() + " offers");
         System.out.println("Fetching time was " + fetchTime + "ms");
+        System.out.println("Constructing time was " + constructorTime + "ms");
         System.out.println("Sorting time was " + sortTime + "ms");
 
     }
